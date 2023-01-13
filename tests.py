@@ -4,29 +4,56 @@ import main
 class TestMain(unittest.TestCase):
 
     def test_conveyor_total(self):
+        '''
+        Test number of items in generated list match total number of runs.
+        '''
         total = 100
         obj = main.Factory(runs=total)
         result = len(obj.conveyor)
         self.assertEqual(result, total)
 
+    def test_conveyor_final(self):
+        '''
+        Test start and end conveyors differ but remain the same length.
+        '''
+        obj = main.Factory(runs=1000, workers=10)
+        before_run = [x for x in obj.conveyor]
+        obj.run()
+        after_run = obj.conveyor
+        self.assertEqual(len(before_run), len(after_run))
+        self.assertTrue(before_run != after_run)
+        
     def test_conveyor_contents(self):
+        '''
+        Test conveyor only contains valid items.
+        '''
         obj = main.Factory()
         self.assertTrue(x in obj.conveyor for x in ["A", "B", ""])
 
     def test_worker_total(self):
+        '''
+        Test correct number of workers are created.
+        '''
         total = 67
         obj = main.Factory(workers=total)
         result = len(obj.workers)
         self.assertEqual(result, total)
 
     def test_product_output(self):
+        '''
+        Test the total number of products produced, match the number of products on the conveyor
+        (This doesn't include products still sitting in worker inventories.)
+        '''
         obj = main.Factory(runs=1000, workers=10)
         obj.run()
-        products_produced = sum([len(x.complete) for x in obj.workers]) 
+        products_produced = sum([len(x.complete) for x in obj.workers])
         products_on_conveyor = obj.conveyor.count('P')
         self.assertEqual(products_produced, products_on_conveyor)
 
     def test_item_A_used(self):
+        '''
+        The the total number of item A on the conveyor at the start, matches the total remaining plus total used in products.
+        '''
         obj = main.Factory(runs=1000, workers=10)
         total_start_A = obj.conveyor.count('A')
         obj.run()
@@ -35,6 +62,9 @@ class TestMain(unittest.TestCase):
         self.assertEqual(total_start_A, total_A_used + remaining_A)
 
     def test_item_B_used(self):
+        '''
+        The the total number of item B on the conveyor at the start, matches the total remaining plus total used in products.
+        '''
         obj = main.Factory(runs=1000, workers=10)
         total_start_B = obj.conveyor.count('B')
         obj.run()
