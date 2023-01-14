@@ -9,10 +9,12 @@ class Factory():
         self.conveyor = [choice(["A", "B", ""]) for x in range(0, runs)]
         self.workers = [Worker() for x in range(workers)]
 
-    def run(self):
+    def begin_workday(self):
         for i,x in enumerate(self.conveyor):
             for worker in self.workers:
                 # Workers will be looped through in sequential order (position 1 Top > position 1 Bottom > position 2 Top, position 2 Bottom etc.)
+                # Consider having a worker attribute for conveyor position x and y.
+                # Instead of looping through workers in turn, could loop through x position in turn and assign priority at random to either position y.
                 if x == "" and "P" in worker.inventory and i >= worker.mem:
                     # Priority will be given to placing down a completed product but only if the current conveyor slot is empty and only if the worker has held onto it for at least 4 turns
                     worker.inventory.remove("P")
@@ -42,8 +44,6 @@ class Worker():
         self.max_items = 2 # Change to adjust the maximum number of items a worker can hold in their inventory. WARNING: Raising this may break self.mem
         self.complete = []
         self.mem = 0 # Used to mark the earlier index at which a worker can place down a product depending on there being an empty space.
-        # Consider also having an attribute for conveyor position x and y.
-        # Instead of looping through workers in turn, could loop through x position in turn and assign priority at random to either position y.
 
     def build_item(self, i):
         self.inventory.remove("A")
@@ -62,7 +62,7 @@ def launch(runs, workers):
     Empty spaces: {app.conveyor.count('')}
         ''')
 
-        app.run()
+        app.begin_workday()
 
         for i,x in enumerate(app.workers):
             print(f"Worker {i+1} completed {len(x.complete)} products - Inventory: {x.inventory}")
@@ -73,4 +73,4 @@ def launch(runs, workers):
         ''')    
 
 if __name__ == '__main__':
-    launch(runs=100, workers=6)
+    launch(runs=100, workers=6) # Change number of runs or workers here.

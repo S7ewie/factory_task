@@ -17,11 +17,11 @@ class TestMain(unittest.TestCase):
         Test start and end conveyors differ but remain the same length.
         '''
         obj = main.Factory(runs=1000, workers=10)
-        before_run = [x for x in obj.conveyor]
-        obj.run()
-        after_run = obj.conveyor
-        self.assertEqual(len(before_run), len(after_run))
-        self.assertTrue(before_run != after_run)
+        before_workday = [x for x in obj.conveyor]
+        obj.begin_workday()
+        after_workday = obj.conveyor
+        self.assertEqual(len(before_workday), len(after_workday))
+        self.assertTrue(before_workday != after_workday)
         
     def test_conveyor_contents(self):
         '''
@@ -45,7 +45,7 @@ class TestMain(unittest.TestCase):
         (This doesn't include products still sitting in worker inventories.)
         '''
         obj = main.Factory(runs=1000, workers=10)
-        obj.run()
+        obj.begin_workday()
         products_produced = sum([len(x.complete) for x in obj.workers])
         products_on_conveyor = obj.conveyor.count('P')
         self.assertEqual(products_produced, products_on_conveyor)
@@ -56,7 +56,7 @@ class TestMain(unittest.TestCase):
         '''
         obj = main.Factory(runs=1000, workers=10)
         total_start_A = obj.conveyor.count('A')
-        obj.run()
+        obj.begin_workday()
         total_A_used = sum([len(x.complete) for x in obj.workers]) + sum([x.inventory.count('P') for x in obj.workers])
         remaining_A = obj.conveyor.count("A") + sum([x.inventory.count('A') for x in obj.workers])
         self.assertEqual(total_start_A, total_A_used + remaining_A)
@@ -67,7 +67,7 @@ class TestMain(unittest.TestCase):
         '''
         obj = main.Factory(runs=1000, workers=10)
         total_start_B = obj.conveyor.count('B')
-        obj.run()
+        obj.begin_workday()
         total_B_used = sum([len(x.complete) for x in obj.workers]) + sum([x.inventory.count('P') for x in obj.workers])
         remaining_B = obj.conveyor.count("B") + sum([x.inventory.count('B') for x in obj.workers])
         self.assertEqual(total_start_B, total_B_used + remaining_B)
